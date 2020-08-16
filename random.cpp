@@ -1,6 +1,16 @@
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+#include <algorithm>
+
+
+/*TODO:
+Add in constraints of game board
+
+Add in constraints of blocking
+Add in non-step over opponent function
+Repeated entry bug
+*/
 
 using namespace std;
 
@@ -10,25 +20,40 @@ public:
     int x;
     int y;
     int steps = 20;
+    int change;
 };
 
-string table [5][7] = {
-                            {"[]","[]","[]","[]","[]","[]","[]"},
-                            {"[]","[]","[]","__","[]","[]","[]"},
-                            {"[]","[]","[]","[]","[]","[]","[]"},
-                            {"[]","[]","[]","[]","[]","[]","[]"},
-                            {" x","[]","[]","[]","[]","[]","o "},
+//The game table
+vector < vector <string> > table{
+                            {"5","[]","[]","[]","[]","[]","[]","[]"},
+                            {"4","[]","[]","[]","__","[]","[]","[]"},
+                            {"3","[]","[]","[]","[]","[]","[]","[]"},
+                            {"2","[]","[]","[]","[]","[]","[]","[]"},
+                            {"1"," x","[]","[]","[]","[]","[]","o "},
+                            {"  ","A"," B"," C"," D"," E"," F"," G"},
                         };
 
+//Funtion to print out the board
 void grid(){
-    for(int i = 0; i < 5; ++i){
-        for(int z = 0; z < 7; ++z){
+    for(int i = 0; i < table.size(); ++i){
+        for(int z = 0; z < table[i].size(); ++z){
             cout << table[i][z];
         }
         cout << endl;
     }
 }
 
+// Create a function for blocking
+void block(){
+    cout << "Enter location where to block (Column then Row no space)";
+    string BlockLocation;
+    cin >> BlockLocation;
+    transform(BlockLocation.begin(), BlockLocation.end(), BlockLocation.begin(), ::toupper);
+    table[53-int(BlockLocation[1])][int(BlockLocation[0])-64]="B ";
+    grid();
+}
+
+//Player1's turn
 int gridchange1(char Direction1, int StepsLeft){
     
     //Player1 inheritance
@@ -37,10 +62,10 @@ int gridchange1(char Direction1, int StepsLeft){
     //Declare position of player 1
     player1.y;
     player1.x;
-
+    
     //Find where Player1 is on the grid
-    for(int i = 0; i < 5; ++i){
-        for(int z = 0; z < 7; ++z){
+    for(int i = 0; i < table.size(); ++i){
+        for(int z = 0; z < table[i].size(); ++z){
             if(table[i][z] == " x"){
                 player1.y = i;
                 player1.x = z;
@@ -50,7 +75,7 @@ int gridchange1(char Direction1, int StepsLeft){
     
     //Replacement after moving forward
     if(player1.y == 1 && player1.x==3)
-        table[player1.y][player1.x] = "__";
+        table[player1.y][player1.x] = "__"; //Temporary to be removed later on
     else
         table[player1.y][player1.x] = "[]";
 
@@ -73,16 +98,12 @@ int gridchange1(char Direction1, int StepsLeft){
     cout << endl;
 
     //Print the updated grid
-    for(int i = 0; i < 5; ++i){
-        for(int z = 0; z < 7; ++z){
-            cout << table[i][z];
-        }
-        cout << endl;
-    }
+    grid();
 
     return(player1.x == 3 && player1.y == 1)? 1:0;
 }
 
+//Player2's turn
 int gridchange2(char Direction2, int StepsLeft){
     
     //Player2 inheritance
@@ -93,8 +114,8 @@ int gridchange2(char Direction2, int StepsLeft){
     player2.x;
 
     //Find where Player2 is on the grid
-    for(int i = 0; i < 5; ++i){
-        for(int z = 0; z < 7; ++z){
+    for(int i = 0; i < table.size(); ++i){
+        for(int z = 0; z < table[i].size(); ++z){
             if(table[i][z] == "o "){
                 player2.y = i;
                 player2.x = z;
@@ -104,7 +125,7 @@ int gridchange2(char Direction2, int StepsLeft){
     
     //Replacement after moving forward
     if(player2.y == 1 && player2.x==3)
-        table[player2.y][player2.x] = "__";
+        table[player2.y][player2.x] = "__"; //Temporary to be removed later on
     else
         table[player2.y][player2.x] = "[]";
 
@@ -127,12 +148,7 @@ int gridchange2(char Direction2, int StepsLeft){
     cout << endl;
 
     //Print out the updated grid
-    for(int i = 0; i < 5; ++i){
-        for(int z = 0; z < 7; ++z){
-            cout << table[i][z];
-        }
-        cout << endl;
-    }
+    grid();
 
     return(player2.x == 3 && player2.y == 1)? 1:0;
 }
@@ -153,12 +169,29 @@ int main(){
 
     //Game loop
     while(player1.steps > 0|| player2.steps > 0){
-        cin >> player1.d;
-        cout << endl;
-        gridchange1(player1.d,player1.steps);
-        cin >> player2.d;
-        cout << endl;
-        gridchange2(player2.d,player2.steps);
+        
+        //Player 1's turn
+        cout<< endl << "Do you want to block[enter 1] or move [enter 2]?" << endl;
+        cin >> player1.change;
+        if(player1.change == 1){
+            block();
+        }
+        else if(player1.change == 2){
+            cin >> player1.d;
+            cout << endl;
+            gridchange1(player1.d,player1.steps);
+        }
+        
+        //Player 2's turn
+        cout<< endl << "Do you want to block[enter 1] or move [enter 2]?" << endl;
+        cin >> player2.change;
+        if(player2.change == 1){
+            block();
+        }
+        else if(player2.change == 2){
+            cin >> player2.d;
+            cout << endl;
+            gridchange1(player2.d,player2.steps);
+        }
     }
-    
 }
