@@ -5,6 +5,7 @@
 
 
 /*TODO:
+Add condition to stop game loop
 Add in constraints of game board
 Add in constraints of blocking
 Add in non-step over opponent function
@@ -16,7 +17,7 @@ using namespace std;
 class point{
 public:
     char d;
-    int steps = 20;
+    int steps = 0;
     int change;
     string emblem;
 };
@@ -51,8 +52,8 @@ void block(){
     grid();
 }
 
-//Player1's turn
-int gridchange(char Direction, int StepsLeft, string piece){
+//Player's move
+int PlayerMove(char Direction, int StepsLeft, string piece){
     
     int x;
     int y;
@@ -76,32 +77,32 @@ int gridchange(char Direction, int StepsLeft, string piece){
     //Change direction
     switch(Direction){
         case 'w':
-            if(table[y - 1][x] == "B "){
+            if(table[y - 1][x] == "B "){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
-            table[y - 1][x] = piece;
+            table[y - 1][x] = piece;        //Move
             break;
         case 's':
-            if(table[y + 1][x] == "B "){
+            if(table[y + 1][x] == "B "){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
-            table[y + 1][x] = piece;
+            table[y + 1][x] = piece;        //Move
             break;
         case 'a':
-            if(table[y][x-1] == "B "){
+            if(table[y][x - 1] == "B "){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
-            table[y][x - 1] = piece;
+            table[y][x - 1] = piece;        //Move
             break;
         case 'd':
-            if(table[y][x+1] == "B "){
+            if(table[y][x + 1] == "B "){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
-            table[y][x + 1] = piece;
+            table[y][x + 1] = piece;        //Move
             break;
     }
 
@@ -112,8 +113,6 @@ int gridchange(char Direction, int StepsLeft, string piece){
 
     return (y == 1 && x==3)? 1:0;
 }
-
-
 
 int main(){
     //Player1 declaration
@@ -128,30 +127,34 @@ int main(){
     grid();
 
     //Game loop
-    while(player1.steps > 0|| player2.steps > 0){
+    while(player1.steps < 20 || player2.steps < 20 || PlayerMove(player1.d,player1.steps,player1.emblem) == 0 ||  PlayerMove(player2.d,player2.steps,player2.emblem) == 0){
         
         //Player 1's turn
         cout<< endl << "Player1, do you want to block[enter 1] or move [enter 2]?" << endl;
         cin >> player1.change;
-        if(player1.change == 1){
+        if(player1.change == 1){        //Blocking opponent
             block();
+            ++++player1.steps;
         }
-        else if(player1.change == 2){
+        else if(player1.change == 2){   //Move piece
             cin >> player1.d;
             cout << endl;
-            gridchange(player1.d,player1.steps,player1.emblem);
+            PlayerMove(player1.d,player1.steps,player1.emblem);
+            ++player1.steps;
         }
         
         //Player 2's turn
         cout<< endl << "Player2, do you want to block[enter 1] or move [enter 2]?" << endl;
         cin >> player2.change;
-        if(player2.change == 1){
+        if(player2.change == 1){        //Blocking opponent
             block();
+            ++player2.steps;
         }
-        else if(player2.change == 2){
+        else if(player2.change == 2){   //Move piece
             cin >> player2.d;
             cout << endl;
-            gridchange(player2.d,player2.steps,player2.emblem);
+            PlayerMove(player2.d,player2.steps,player2.emblem);
+            ++player2.steps;
         }
     }
 }
