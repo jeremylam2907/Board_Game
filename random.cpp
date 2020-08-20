@@ -5,10 +5,7 @@
 
 
 /*TODO:
-Add condition to stop game loop
-Add in constraints of game board
-Add in constraints of blocking
-Add in non-step over opponent function
+
 Repeated entry bug
 */
 
@@ -69,36 +66,33 @@ int PlayerMove(char Direction, int StepsLeft, string piece){
     }
     
     //Replacement after moving forward
-    if(y == 1 && x==3)
-        table[y][x] = "__"; //Temporary to be removed later on
-    else
         table[y][x] = "[]";
 
     //Change direction
     switch(Direction){
         case 'w':
-            if(table[y - 1][x] == "B "){    //Being blocked
+            if(table[y - 1][x] == "B "||y  == 0){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
             table[y - 1][x] = piece;        //Move
             break;
         case 's':
-            if(table[y + 1][x] == "B "){    //Being blocked
+            if(table[y + 1][x] == "B "||y + 1 == 5){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
             table[y + 1][x] = piece;        //Move
             break;
         case 'a':
-            if(table[y][x - 1] == "B "){    //Being blocked
+            if(table[y][x - 1] == "B "||x == 1){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
             table[y][x - 1] = piece;        //Move
             break;
         case 'd':
-            if(table[y][x + 1] == "B "){    //Being blocked
+            if(table[y][x + 1] == "B "||x == 7){    //Being blocked
                 table[y][x] = piece;
                 break;
             }
@@ -111,8 +105,9 @@ int PlayerMove(char Direction, int StepsLeft, string piece){
     //Print the updated grid
     grid();
 
-    return (y == 1 && x==3)? 1:0;
+    return (table[1][4] == piece)? 1:0;
 }
+
 
 int main(){
     //Player1 declaration
@@ -127,7 +122,7 @@ int main(){
     grid();
 
     //Game loop
-    while(player1.steps < 20 || player2.steps < 20 || PlayerMove(player1.d,player1.steps,player1.emblem) == 0 ||  PlayerMove(player2.d,player2.steps,player2.emblem) == 0){
+    while(player1.steps < 20 || player2.steps < 20){
         
         //Player 1's turn
         cout<< endl << "Player1, do you want to block[enter 1] or move [enter 2]?" << endl;
@@ -139,7 +134,10 @@ int main(){
         else if(player1.change == 2){   //Move piece
             cin >> player1.d;
             cout << endl;
-            PlayerMove(player1.d,player1.steps,player1.emblem);
+            if(PlayerMove(player1.d,player1.steps,player1.emblem) == 1){
+                cout << endl << "Player 1 wins";
+                return 0;
+            }
             ++player1.steps;
         }
         
@@ -148,12 +146,15 @@ int main(){
         cin >> player2.change;
         if(player2.change == 1){        //Blocking opponent
             block();
-            ++player2.steps;
+            ++++player2.steps;
         }
         else if(player2.change == 2){   //Move piece
             cin >> player2.d;
             cout << endl;
-            PlayerMove(player2.d,player2.steps,player2.emblem);
+            if(PlayerMove(player2.d,player2.steps,player2.emblem) == 1){
+                cout << endl << "Player 2 wins";
+                return 0;
+            }
             ++player2.steps;
         }
     }
