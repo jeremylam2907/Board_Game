@@ -5,8 +5,7 @@
 
 
 /*TODO:
-
-Repeated entry bug
+Out of bound grid re-enter
 */
 
 using namespace std;
@@ -99,7 +98,6 @@ int PlayerMove(char Direction, int StepsLeft, string piece){
             table[y][x + 1] = piece;        //Move
             break;
     }
-
     cout << endl;
 
     //Print the updated grid
